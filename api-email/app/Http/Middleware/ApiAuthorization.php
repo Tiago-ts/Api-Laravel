@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Models\Aplication;
 
 class ApiAuthorization
 {
@@ -21,11 +22,14 @@ class ApiAuthorization
         if (!isset ($bearerToken) || is_null($bearerToken)){
             return response()->json(['message' => "Forbiden"], 403);
         }
-        $token = "klfnsdlkafksdlfnnnwfw";
+        
 
-        if ($bearerToken == $token){
+        $aplication = Aplication::where('token', $bearerToken)->first();
+
+        if (is_null($aplication)){
             return response()->json(['messaage' => 'Unauthorized'], 401);
         }
+        $request->merge(['aplication_id'=> $aplication['id']]);
 
         return $next($request);
     }
